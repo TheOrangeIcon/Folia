@@ -33,7 +33,7 @@ jobs:
         uses: actions/upload-artifact@v3
         with:
           name: server.jar
-          path: ./packages/server.jar
+          path: ./build/*
   update-release:
     name: Release .jar
     runs-on: ubuntu-latest

@@ -29,3 +29,33 @@ jobs:
         run: ./gradlew applyPatches
       - name: Build
         run: ./gradlew createReobfBundlerJar
+      - name: Upload Artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: server.jar
+          path: ./packages/server.jar
+  update-release:
+    name: Release .jar
+    runs-on: ubuntu-latest
+    needs: build
+
+    steps:
+    - name: Delete old release
+      uses: dev-drprasad/delete-tag-and-release@v0.2.1
+      with:
+        delete_release: true
+        tag_name: release
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    - name: Get artifacts
+      uses: actions/download-artifact@v3
+      with:
+        name: server.jar
+    - name: Create new release
+      uses: ncipollo/release-action@v1
+      with:
+        name: Rolling Release
+        body: These are automatically updated builds of the latest commit.
+        artifacts: "server.jar"
+        tag: release
+        token: ${{ secrets.GITHUB_TOKEN }}
